@@ -8,8 +8,14 @@ import { demoMode, seedDemo } from "@/lib/demo";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const key = process.env.DEMO_SETUP_KEY;
-  if (!demoMode() || !key || url.searchParams.get("key") !== key) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!demoMode()) {
+    return NextResponse.json({ error: "Demo mode is off. Set the build variable NEXT_PUBLIC_DEMO_MODE to 1 and redeploy." }, { status: 404 });
+  }
+  if (!key) {
+    return NextResponse.json({ error: "DEMO_SETUP_KEY isn't set on this worker." }, { status: 404 });
+  }
+  if (url.searchParams.get("key") !== key) {
+    return NextResponse.json({ error: "That key doesn't match DEMO_SETUP_KEY." }, { status: 403 });
   }
   try {
     const result = await seedDemo(url.origin);
