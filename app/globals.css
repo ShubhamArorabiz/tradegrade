@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-manrope), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-manrope), system-ui, sans-serif;
+
+  /* Blueprint palette (Figma variables) */
+  --color-bg: #f4f7fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef2f8;
+  --color-overlay: #e2e8f2;
+  --color-line: #dce3ee;
+  --color-line-strong: #c5cfdd;
+  --color-ink: #0b1b33;
+  --color-muted: #5b6b82;
+  --color-faint: #8a97ab;
+  --color-accent: #1d4ed8;
+  --color-accent-strong: #1e40af;
+  --color-accent-soft: #eaf0fe;
+  --color-brand: #ff6a00;
+  --color-brand-soft: #fff1e6;
+  --color-ai: #7c3aed;
+  --color-ai-soft: #f1ecfe;
+  --color-ok: #16a34a;
+  --color-ok-soft: #e3f8ea;
+  --color-warn: #b45309;
+  --color-warn-soft: #fef6dc;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fdecec;
+  --color-viewfinder: #0a1220;
+
+  --shadow-card: 0 4px 16px rgb(10 28 51 / 0.07);
+  --shadow-lift: 0 10px 24px -8px rgb(29 78 216 / 0.45);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+/* Blueprint grid, used behind hero artwork and empty map */
+.bg-grid {
+  background-color: var(--color-accent-soft);
+  background-image:
+    linear-gradient(to right, rgb(29 78 216 / 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(29 78 216 / 0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+@utility page {
+  @apply mx-auto w-full max-w-lg px-4;
+}
+@utility with-tabs {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 h-12 font-semibold text-[15px] transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+}
+@utility btn-primary {
+  @apply btn bg-accent text-white shadow-lift hover:bg-accent-strong;
+}
+@utility btn-secondary {
+  @apply btn bg-surface border border-line text-ink hover:bg-surface-2;
+}
+@utility btn-ghost {
+  @apply btn bg-transparent text-muted hover:text-ink;
+}
+@utility btn-danger {
+  @apply btn bg-danger-soft text-danger hover:bg-danger hover:text-white;
+}
+@utility card {
+  @apply rounded-2xl bg-surface border border-line shadow-card;
+}
+@utility input {
+  @apply w-full h-12 rounded-xl bg-surface border border-line px-3.5 text-[16px] text-ink placeholder:text-faint outline-none focus:border-accent focus:ring-2 focus:ring-accent/15;
+}
+@utility textarea {
+  @apply input h-auto py-3 min-h-24;
+}
+@utility label {
+  @apply mb-1.5 flex items-center gap-2 text-[13px] font-semibold text-ink;
+}
+@utility chip {
+  @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-surface-2 px-3.5 h-9 text-[13px] font-semibold text-muted whitespace-nowrap transition;
+}
+@utility chip-on {
+  @apply chip border-accent bg-accent-soft text-accent;
+}
+@utility badge {
+  @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.04em];
+}
+@utility scroll-row {
+  @apply flex gap-2 overflow-x-auto -mx-4 px-4 pb-1;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes scan {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.animate-rise {
+  animation: rise 0.35s ease-out both;
+}
