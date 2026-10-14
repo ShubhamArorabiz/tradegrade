@@ -42,8 +42,13 @@ export function useLocation() {
   const locate = useCallback(async () => {
     setLocating(true);
     setError(null);
+    // Show downtown Toronto right away: the browser's permission prompt can sit unanswered.
+    setPlace((p) => p ?? { ...DEFAULT_CENTER, label: "Downtown Toronto", source: "default" });
     try {
-      const pos = await getGps();
+      const pos = await Promise.race([
+        getGps(),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), 15000)),
+      ]);
       const next: Place = { ...pos, label: "Your location", source: "gps" };
       write(next);
       setPlace(next);
