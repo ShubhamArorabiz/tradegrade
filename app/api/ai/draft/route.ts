@@ -5,6 +5,7 @@ import { apiUser, fail } from "@/lib/api";
 import { createAdminClient } from "@/lib/supabase/server";
 import { DraftError, draftListingFromPhotos, mockDraft } from "@/lib/claude";
 import { AI_DAILY_LIMIT, MAX_PHOTOS } from "@/lib/constants";
+import { SUPABASE_URL } from "@/lib/supabase/url";
 
 export const maxDuration = 30;
 
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return fail("Add at least one photo");
 
-  const prefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listing-photos/${ctx.user.id}/`;
+  const prefix = `${SUPABASE_URL}/storage/v1/object/public/listing-photos/${ctx.user.id}/`;
   if (!parsed.data.photos.every((p) => p.startsWith(prefix))) return fail("Photos must be uploaded from this device");
 
   const db = createAdminClient();

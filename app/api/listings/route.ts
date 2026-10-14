@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { apiUser, fail } from "@/lib/api";
 import { CATEGORIES, LISTING_DAYS, MAX_PHOTOS, MAX_PRICE_CENTS, MIN_PRICE_CENTS } from "@/lib/constants";
+import { SUPABASE_URL } from "@/lib/supabase/url";
 
 const Body = z.object({
   title: z.string().trim().min(3).max(120),
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the listing details");
   const { lat, lng, ai_draft, photos, ...fields } = parsed.data;
 
-  const bucketPrefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listing-photos/${ctx.user.id}/`;
+  const bucketPrefix = `${SUPABASE_URL}/storage/v1/object/public/listing-photos/${ctx.user.id}/`;
   if (!photos.every((p) => p.startsWith(bucketPrefix))) return fail("Photos must be uploaded from this device");
 
   const { data, error } = await ctx.supabase
