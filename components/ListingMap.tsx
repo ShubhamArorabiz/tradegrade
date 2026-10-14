@@ -89,5 +89,5 @@ export default function ListingMap({
     });
   }, [items, onSelect]);
 
-  return <div ref={el} className="h-full w-full" />;
+  return <div ref={el} className="bg-grid h-full w-full" />;
 }

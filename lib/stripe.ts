@@ -12,7 +12,7 @@ export function siteUrl() {
   return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 }
 
-/** PAYMENTS_MODE=mock fakes Stripe for local testing without an account. */
+/** PAYMENTS_MODE=mock (or the demo test site) fakes Stripe, so no account is needed. */
 export function mockPayments() {
-  return process.env.PAYMENTS_MODE === "mock";
+  return process.env.PAYMENTS_MODE === "mock" || process.env.NEXT_PUBLIC_DEMO_MODE === "1";
 }

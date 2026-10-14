@@ -5,7 +5,11 @@ A site super snaps a photo, Claude drafts the listing, a nearby contractor taps
 Buy Now, and the seller is paid when they scan the buyer's QR pass at pickup.
 
 Stack: Next.js 16 (App Router) · Supabase (Postgres + PostGIS, phone auth,
-storage, realtime) · Stripe Checkout + Connect Express · Claude API · Vercel.
+storage, realtime) · Stripe Checkout + Connect Express · Claude API · Cloudflare
+Workers (via OpenNext) or Vercel.
+
+**Test site:** [DEPLOY-CLOUDFLARE.md](DEPLOY-CLOUDFLARE.md) puts a demo on tradegrade.ca with
+`NEXT_PUBLIC_DEMO_MODE=1`: Stripe and Claude are simulated and testers use demo accounts.
 
 ## How the money moves
 

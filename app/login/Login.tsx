@@ -7,7 +7,7 @@ import Logo from "@/components/Logo";
 import { createClient } from "@/lib/supabase/client";
 
 const DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "1";
-const DEMO_CODE = process.env.NEXT_PUBLIC_DEMO_CODE ?? "123456";
+const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_PASSWORD || "tradegrade-demo";
 
 function toE164(input: string) {
   const digits = input.replace(/\D/g, "");
@@ -71,15 +71,13 @@ export default function Login() {
     router.refresh();
   }
 
-  async function demoSignIn(phone: string) {
+  async function demoSignIn(email: string, password = DEMO_PASSWORD) {
     setBusy(true);
     setError(null);
-    const supabase = createClient();
-    const sent = await supabase.auth.signInWithOtp({ phone });
-    const res = sent.error ? sent : await supabase.auth.verifyOtp({ phone, token: DEMO_CODE, type: "sms" });
-    if (res.error) {
+    const { error } = await createClient().auth.signInWithPassword({ email, password });
+    if (error) {
       setBusy(false);
-      return setError("Demo sign-in isn't available right now.");
+      return setError(password === DEMO_PASSWORD ? "Demo sign-in isn't set up yet." : "That email and password didn't match.");
     }
     router.replace(next);
     router.refresh();
@@ -130,22 +128,42 @@ export default function Login() {
           <div className="mt-4 rounded-2xl border border-accent/30 bg-accent-soft p-3">
             <p className="text-[13px] font-bold text-accent">Test site: payments and Claude are simulated</p>
             <div className="mt-2 grid grid-cols-2 gap-2">
-              <button className="btn-secondary h-10 text-[13px]" disabled={busy} onClick={() => demoSignIn("+14165550103")}>
+              <button className="btn-secondary h-10 text-[13px]" disabled={busy} onClick={() => demoSignIn("demo-buyer@tradegrade.ca")}>
                 Try as a buyer
               </button>
-              <button className="btn-secondary h-10 text-[13px]" disabled={busy} onClick={() => demoSignIn("+14165550102")}>
+              <button className="btn-secondary h-10 text-[13px]" disabled={busy} onClick={() => demoSignIn("demo-seller@tradegrade.ca")}>
                 Try as a seller
               </button>
             </div>
             {error && <p className="mt-2 text-[13px] text-danger">{error}</p>}
           </div>
         )}
-        <button className="btn-primary mt-4 w-full text-[16px]" onClick={() => setStep("enter")}>
-          <Phone size={18} /> Continue with phone
-        </button>
+        {DEMO ? (
+          <form
+            className="mt-3"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const f = new FormData(e.currentTarget);
+              demoSignIn(String(f.get("email")), String(f.get("password")));
+            }}
+          >
+            <details>
+              <summary className="cursor-pointer text-center text-[13px] font-bold text-accent">Sign in with email and password</summary>
+              <input name="email" type="email" required className="input mt-3" placeholder="Email" autoComplete="username" />
+              <input name="password" type="password" required className="input mt-2" placeholder="Password" autoComplete="current-password" />
+              <button className="btn-primary mt-3 w-full" disabled={busy}>
+                Sign in
+              </button>
+            </details>
+          </form>
+        ) : (
+          <button className="btn-primary mt-4 w-full text-[16px]" onClick={() => setStep("enter")}>
+            <Phone size={18} /> Continue with phone
+          </button>
+        )}
         <p className="mt-3 text-center text-[12px] text-faint">
           By continuing you agree to the Terms and the As-Is policy.{" "}
-          <button
+          {!DEMO && (<button
             className="font-semibold text-accent"
             onClick={() => {
               setMode("email");
@@ -153,7 +171,7 @@ export default function Login() {
             }}
           >
             Use email instead
-          </button>
+          </button>)}
         </p>
       </main>
     );

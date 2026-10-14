@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   if ((count ?? 0) >= AI_DAILY_LIMIT) return fail("You've hit today's limit for photo drafts. You can still type the listing in.", 429);
   await db.from("ai_usage").insert({ user_id: ctx.user.id });
 
-  if (process.env.AI_MODE === "mock") {
+  if (process.env.AI_MODE === "mock" || process.env.NEXT_PUBLIC_DEMO_MODE === "1") {
     await new Promise((r) => setTimeout(r, 2500));
     return NextResponse.json({ draft: mockDraft() });
   }

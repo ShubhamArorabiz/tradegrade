@@ -253,11 +253,12 @@ create function public.nearby_listings(
   seller_company text, verified_business boolean, distance_km double precision,
   approx_lat double precision, approx_lng double precision
 )
+-- Parameters are qualified with the function name: listings has lat/lng columns too.
 language sql stable security definer set search_path = public, extensions as $$
   select l.id, l.title, l.category, l.condition, l.quantity, l.unit,
          l.price_cents, l.photos, l.area_label, l.created_at, p.company,
          (p.company is not null and p.company <> '' and p.payouts_enabled),
-         round((st_distance(l.location, st_makepoint(lng, lat)::geography) / 1000)::numeric, 1)::double precision,
+         round((st_distance(l.location, st_makepoint(nearby_listings.lng, nearby_listings.lat)::geography) / 1000)::numeric, 1)::double precision,
          round(st_y(l.location::geometry)::numeric, 2)::double precision,
          round(st_x(l.location::geometry)::numeric, 2)::double precision
   from public.listings l
@@ -265,14 +266,14 @@ language sql stable security definer set search_path = public, extensions as $$
   where l.status = 'active'
     and l.expires_at > now()
     and not p.suspended
-    and st_dwithin(l.location, st_makepoint(lng, lat)::geography, radius_km * 1000)
-    and (cat is null or l.category = cat)
-    and (cond is null or l.condition = cond)
+    and st_dwithin(l.location, st_makepoint(nearby_listings.lng, nearby_listings.lat)::geography, nearby_listings.radius_km * 1000)
+    and (nearby_listings.cat is null or l.category = nearby_listings.cat)
+    and (nearby_listings.cond is null or l.condition = nearby_listings.cond)
     and (not free_only or l.price_cents = 0)
     and (max_price_cents is null or l.price_cents <= max_price_cents)
-    and (q is null or l.title ilike '%' || q || '%' or l.description ilike '%' || q || '%'
-         or l.category ilike '%' || q || '%')
-  order by l.location <-> st_makepoint(lng, lat)::geography
+    and (nearby_listings.q is null or l.title ilike '%' || nearby_listings.q || '%' or l.description ilike '%' || nearby_listings.q || '%'
+         or l.category ilike '%' || nearby_listings.q || '%')
+  order by l.location <-> st_makepoint(nearby_listings.lng, nearby_listings.lat)::geography
   limit least(max_rows, 200);
 $$;
 
