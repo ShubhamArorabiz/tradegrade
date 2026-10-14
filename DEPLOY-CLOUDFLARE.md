@@ -97,3 +97,24 @@ You should see `{"ok":true,"accounts":3,"listings":9}`. Then open **https://trad
   "Error 1102" or "Worker exceeded resource limits", switch Workers to the **Paid** plan
   ($5 USD a month) under **Workers & Pages → Plans**.
 - When you go live for real, you'll add the Stripe and Anthropic keys and turn `NEXT_PUBLIC_DEMO_MODE` off. The README covers that.
+
+## Optional: "Continue with Google"
+
+The button stays hidden until step 4 below, so nothing breaks while you set this up.
+
+1. **Google:** go to **console.cloud.google.com**, create a project called `TradeGrade`, then open
+   **Google Auth Platform**. Click **Get started**: app name `TradeGrade`, your support email,
+   audience **External**, your contact email, then **Create**.
+   Under **Audience**, click **Publish app** so anyone (not just test users) can sign in.
+2. Still in Google Auth Platform, open **Clients → Create client**, choose **Web application**, then add:
+   - **Authorized JavaScript origins:** `https://tradegrade.ca`
+   - **Authorized redirect URIs:** `https://YOUR-PROJECT.supabase.co/auth/v1/callback`
+     (Supabase shows this exact address in the next step, with a copy button.)
+   Click **Create** and copy the **Client ID** and **Client secret**.
+3. **Supabase:** open **Authentication → Sign In / Providers → Google**, turn it on, paste the
+   Client ID and Client secret, and **Save**. Then open **Authentication → URL Configuration**:
+   set **Site URL** to `https://tradegrade.ca` and add `https://tradegrade.ca/**` under **Redirect URLs**.
+4. **Cloudflare:** in the worker's **Settings → Build → Variables**, add `NEXT_PUBLIC_GOOGLE_LOGIN` = `1`,
+   then open **Deployments** and retry the latest build.
+
+New Google users are asked for their name (filled in from Google), company and trade the first time.

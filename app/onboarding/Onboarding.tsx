@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { TRADES } from "@/lib/constants";
 
-export default function Onboarding({ next, userId }: { next: string; userId: string }) {
+export default function Onboarding({ next, userId, suggestedName = "" }: { next: string; userId: string; suggestedName?: string }) {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const [name, setName] = useState(suggestedName);
   const [company, setCompany] = useState("");
   const [trade, setTrade] = useState("");
   const [busy, setBusy] = useState(false);

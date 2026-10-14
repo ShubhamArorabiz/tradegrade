@@ -10,5 +10,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   const { user, profile } = await getUser();
   if (!user) redirect(`/login?next=${encodeURIComponent(safeNext)}`);
   if (profile?.full_name) redirect(safeNext);
-  return <Onboarding next={safeNext} userId={user.id} />;
+  const meta = user.user_metadata ?? {};
+  const suggestedName = String(meta.full_name ?? meta.name ?? "");
+  return <Onboarding next={safeNext} userId={user.id} suggestedName={suggestedName} />;
 }
